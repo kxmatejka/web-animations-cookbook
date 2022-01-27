@@ -1,9 +1,9 @@
-import {FC, useEffect, useState, useRef, Children, cloneElement} from 'react'
+import {FC, useEffect, useState, useRef, Children, cloneElement, ReactElement} from 'react';
 import styled from 'styled-components'
 
 const wait = (time: number) => new Promise((resolve) => setTimeout(resolve, time))
 
-const AnimatedImage: FC<{srcPath: string, onComplete: () => void}> = ({srcPath, onComplete}) => {
+const AnimatedImage: FC<{srcPath: string, onComplete?: () => void}> = ({srcPath, onComplete}) => {
   const [src, setSrc] = useState<string|undefined>()
   const imgRef = useRef<HTMLImageElement>()
 
@@ -44,35 +44,29 @@ const Container = styled.div`
   }
 `
 
-const ImageLoader: FC<{allowedChildren: number[]}> = ({allowedChildren, children}) => {
+const ImageLoader: FC = ({children}) => {
+  const [allowedChildren, setAllowedChildren] = useState<number[]>([0])
+
   return (
     <>
       {Children.map(children, (child, index) => {
-        console.log({allowedChildren, index, cond: allowedChildren.includes(index)})
-        return allowedChildren.includes(index) ? child : null
+        return allowedChildren.includes(index)
+          ? cloneElement(child as ReactElement, {
+            onComplete: () => setAllowedChildren((ps) => [...ps, index + 1])
+          })
+          : null
       })}
     </>
   )
 }
 
 const ImagesColum: FC = () => {
-  const [allowedChildren, setAllowedChildren] = useState<number[]>([0])
-
   return (
     <Container>
-      <ImageLoader allowedChildren={allowedChildren}>
-        <AnimatedImage
-          srcPath='/bear-1.jpg'
-          onComplete={() => setAllowedChildren((ps) => [...ps, 1])}
-        />
-        <AnimatedImage
-          srcPath='/bear-2.jpg'
-          onComplete={() => setAllowedChildren((ps) => [...ps, 2])}
-        />
-        <AnimatedImage
-          srcPath='/bear-3.jpg'
-          onComplete={() => setAllowedChildren((ps) => ps)}
-        />
+      <ImageLoader>
+        <AnimatedImage srcPath='/bear-1.jpg'/>
+        <AnimatedImage srcPath='/bear-2.jpg'/>
+        <AnimatedImage srcPath='/bear-3.jpg'/>
       </ImageLoader>
     </Container>
   )
