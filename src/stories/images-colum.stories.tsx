@@ -48,7 +48,7 @@ const ImageLoader: FC = ({children}) => {
   const [allowedChildren, setAllowedChildren] = useState<number[]>([0])
 
   return (
-    <>
+    <Container>
       {Children.map(children, (child, index) => {
         return allowedChildren.includes(index)
           ? cloneElement(child as ReactElement, {
@@ -56,19 +56,17 @@ const ImageLoader: FC = ({children}) => {
           })
           : null
       })}
-    </>
+    </Container>
   )
 }
 
 const ImagesColum: FC = () => {
   return (
-    <Container>
-      <ImageLoader>
-        <AnimatedImage srcPath='/bear-1.jpg'/>
-        <AnimatedImage srcPath='/bear-2.jpg'/>
-        <AnimatedImage srcPath='/bear-3.jpg'/>
-      </ImageLoader>
-    </Container>
+    <ImageLoader>
+      <AnimatedImage srcPath='/bear-1.jpg'/>
+      <AnimatedImage srcPath='/bear-2.jpg'/>
+      <AnimatedImage srcPath='/bear-3.jpg'/>
+    </ImageLoader>
   )
 }
 
